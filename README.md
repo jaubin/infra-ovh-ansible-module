@@ -15,6 +15,20 @@ By default, the module works with Ansible 2.2. If you want to use it with Ansibl
 from module_utils.basic import AnsibleModule
 ```
 
+## Installation
+
+The best way to install this tool is to include it directly within your playbook, under a library subfolder.
+
+To do so :
+* Create a library/ subdirectory in your playbook root directory.
+* Copy file modules/extras/cloud/ovh/ovh.py to that directory.
+
+Now if you want to do a global install, you'd better package this project as a PIP package which depends on the ovh package.
+
+Each approach has its pros and cons :
+* The local approach is easier to set up but might be cumbersome to maintain if you use it in many different playbooks.
+* The global approach is a kind of hidden dependency that may make your playbook hard to debug.
+
 ## Configuration
 
 In `/etc/ovh.conf`:
