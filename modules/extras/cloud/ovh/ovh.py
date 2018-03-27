@@ -40,7 +40,7 @@ requirements:
 options:
 	name:
 		required: true
-		description: The name of the service (dedicated, dns)
+		description: The name of the service (dedicated, dns). Beware that it must be OVH internal name, for example nsXXXXXXXX.ip-00-00-00.eu.
 	state:
 		required: false
 		default: present
