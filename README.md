@@ -121,7 +121,7 @@ Here are a few examples of what you can do. Please read the module for everythin
   when: template not in templates.objects
 
 - name: Install the dedicated server
-  ovh: service='install' name='foo.ovh.eu' hostname='internal.bar.foo.com' template='custom'
+  ovh: service='install' name='ns66666666.ip-42-422-42.eu' hostname='internal.bar.foo.com' template='custom'
   
 - name: Delete template
   ovh: service='template' name='{{ template }}' state='absent'
