@@ -23,6 +23,7 @@ class ActionModule(ActionBase):
 		template = self._task.args.get('template', None)
 		hostname = self._task.args.get('hostname', None)
 		service = self._task.args.get('service', None)
+		sshKey = self._task.args.get('sshKey', None);
 		
 		result['failed'] = True
 		new_src = name

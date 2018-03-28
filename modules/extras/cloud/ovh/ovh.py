@@ -48,6 +48,9 @@ options:
 		description:
 			- Determines whether the dedicated/dns is to be created/modified
 			  or deleted
+        sshKey:
+                required: true
+                description: the name of the SSH key you wan't to use to connect to your host.
 	service:
 		required: true
 		choices: ['boot', 'dns', 'vrack', 'reverse', 'monitoring', 'install', 'status', 'list', 'template', 'terminate']
@@ -121,7 +124,7 @@ EXAMPLES = '''
 
 # Install a server from a template
 - name: Install the dedicated server
-  ovh: service='install' name='foo.ovh.eu' hostname='internal.bar.foo.com' template='SOME TEMPLATE'
+  ovh: service='install' sshKey='foobar' name='foo.ovh.eu' hostname='internal.bar.foo.com' template='SOME TEMPLATE'
 
 - name: Wait until installation is finished
   local_action:
@@ -207,7 +210,7 @@ def getStatusInstall(ovhclient, module):
 
 
 def launchInstall(ovhclient, module):
-	if module.params['name'] and module.params['hostname'] and module.params['template']:
+	if module.params['name'] and module.params['hostname'] and module.params['template'] and module.params['sshKey']:
 		try:
 			result = ovhclient.get('/me/installationTemplate')
 			if module.params['template'] not in result:
@@ -216,7 +219,7 @@ def launchInstall(ovhclient, module):
 			module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
 		if module.check_mode:
 			module.exit_json(changed=True, msg="Installation in progress on %s ! - (dry run mode)" % module.params['name'])
-		details = {"details":{"language":"en","customHostname":module.params['hostname']},"templateName":module.params['template']}
+		details = {"details":{"language": "en", "customHostname": module.params['hostname'], "sshKeyName": module.params['sshKey']}, "templateName": module.params['template']}
 		try:
 			ovhclient.post('/dedicated/server/%s/install/start' % module.params['name'],
 					**details)
@@ -225,11 +228,15 @@ def launchInstall(ovhclient, module):
 			module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
 	else:
 		if not module.params['name']:
-			module.fail_json(changed=False, msg="Please give the service's name you want to install")
+			module.fail_json(changed=False, msg="Please give the service's name you want to install - Note that it must be OVH internal name, something like ns6666666.ip-00-00-00.ovh.eu")
 		if not module.params['template']:
 			module.fail_json(changed=False, msg="Please give a template to install")
 		if not module.params['hostname']:
 			module.fail_json(changed=False, msg="Please give a hostname for your installation")
+		if not module.params['sshKey']:
+			module.fail_json(changed=False, msg="Please give the ssh key name for your installation")
+
+
 
 def changeMonitoring(ovhclient, module):
 	if module.params['name'] and module.params['state']:
@@ -495,6 +502,7 @@ def main():
 			argument_spec = dict(
 				state = dict(default='present', choices=['present', 'absent', 'modified']),
 				name  = dict(required=True),
+				sshKey = dict(required=False, default=None),
 				service = dict(choices=['boot', 'dns', 'vrack', 'reverse', 'monitoring', 'install', 'status', 'list', 'template', 'terminate'], required=True),
 				domain = dict(required=False, default='None'),
 				ip    = dict(required=False, default='None'),
