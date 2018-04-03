@@ -286,12 +286,12 @@ def changeReverse(ovhclient, module):
 			result['reverse'] = ''
 		if result['reverse'] != fqdn:
 			if module.check_mode:
-				module.exit_json(changed=True, msg="Reverse %s to %s succesfully set ! - (dry run mode)" % (module.params['ip'], fqdn))
+				module.exit_json(changed=True, msg="Reverse %s to %s successfully set ! - (dry run mode)" % (module.params['ip'], fqdn))
 			try:
 				ovhclient.post('/ip/%s/reverse' % module.params['ip'],
 						ipReverse=module.params['ip'],
 						reverse=fqdn)
-				module.exit_json(changed=True, msg="Reverse %s to %s succesfully set !" % (module.params['ip'], fqdn))
+				module.exit_json(changed=True, msg="Reverse %s to %s successfully set !" % (module.params['ip'], fqdn))
 			except APIError as apiError:
 				module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
 		else:
@@ -306,15 +306,15 @@ def changeDNS(ovhclient, module):
 	msg = ''
 	if module.params['name'] == 'refresh':
 		if module.check_mode:
-			module.exit_json(changed=True, msg="Domain %s succesfully refreshed ! - (dry run mode)" % module.params['domain'])
+			module.exit_json(changed=True, msg="Domain %s successfully refreshed ! - (dry run mode)" % module.params['domain'])
 		try:
 			ovhclient.post('/domain/zone/%s/refresh' % module.params['domain'])
-			module.exit_json(changed=True, msg="Domain %s succesfully refreshed !" % module.params['domain'])
+			module.exit_json(changed=True, msg="Domain %s successfully refreshed !" % module.params['domain'])
 		except APIError as apiError:
 			module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
 	if module.params['domain'] and module.params['ip']:
 		if module.check_mode:
-			module.exit_json(changed=True, msg="DNS succesfully %s on %s - (dry run mode)" % (module.params['state'], module.params['name']))
+			module.exit_json(changed=True, msg="DNS successfully %s on %s - (dry run mode)" % (module.params['state'], module.params['name']))
 		try:
 			check = ovhclient.get('/domain/zone/%s/record' % module.params['domain'],
 						fieldType=u'A',
@@ -351,7 +351,7 @@ def changeDNS(ovhclient, module):
 				try:
 					for ind in check:
 						resultpost = ovhclient.delete('/domain/zone/%s/record/%s' % (module.params['domain'], ind))
-					module.exit_json(changed=True, msg="Target %s succesfully deleted from domain %s" % (module.params['name'], module.params['domain']))
+					module.exit_json(changed=True, msg="Target %s successfully deleted from domain %s" % (module.params['name'], module.params['domain']))
 				except APIError as apiError:
 					module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
 			else:
@@ -365,7 +365,7 @@ def changeDNS(ovhclient, module):
 def changeVRACK(ovhclient, module):
 	if module.params['vrack']:
 		if module.check_mode:
-			module.exit_json(changed=True, msg="%s succesfully %s on %s - (dry run mode)" % (module.params['name'], module.params['state'],module.params['vrack']))
+			module.exit_json(changed=True, msg="%s successfully %s on %s - (dry run mode)" % (module.params['name'], module.params['state'],module.params['vrack']))
 		if module.params['state'] == 'present':
 			try:
 				check = ovhclient.get('/dedicated/server/%s/vrack' % (module.params['name']))
@@ -393,7 +393,7 @@ def changeVRACK(ovhclient, module):
 
 def generateTemplate(ovhclient, module):
 	if module.check_mode:
-		module.exit_json(changed=True, msg="%s succesfully %s on ovh API - (dry run mode)" % (module.params['name'], module.params['state']))
+		module.exit_json(changed=True, msg="%s successfully %s on ovh API - (dry run mode)" % (module.params['name'], module.params['state']))
 	src = module.params['name']
 	with open(src, 'r') as stream:
 		content = yaml.load(stream)
@@ -435,13 +435,13 @@ def generateTemplate(ovhclient, module):
 							type=partition['type'])
 			except APIError as apiError:
 				module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
-		module.exit_json(changed=True, msg="Template %s succesfully created" % conf['templateName'])
+		module.exit_json(changed=True, msg="Template %s successfully created" % conf['templateName'])
 	elif module.params['state'] == 'absent':
 		try:
 			ovhclient.delete('/me/installationTemplate/%s' % conf['templateName'])
 		except APIError as apiError:
 			module.fail_json(changed=False, msg="Failed to call OVH API: {0}".format(apiError))
-		module.exit_json(changed=True, msg="Template %s succesfully deleted" % conf['templateName'])
+		module.exit_json(changed=True, msg="Template %s successfully deleted" % conf['templateName'])
 	else:
 		module.fail_json(changed=False, msg="State %s not supported. Only present/absent" % module.params['state'])
 
